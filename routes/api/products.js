@@ -5,13 +5,14 @@ var auth = require("../../middlewares/auth");
 var admin = require("../../middlewares/admin");
 var { Product } = require("../../models/product");
 
-router.get("/", auth, admin, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
   console.log(req.user);
   let page = Number(req.query.page ? req.query.page : 1);
   let perPage = Number(req.query.perPage ? req.query.perPage : 10);
   let skipRecords = perPage * (page - 1);
-  let product = await Product.find().skip(skipRecords).limit(perPage);
-  res.send(product);
+  let products = await Product.find().skip(skipRecords).limit(perPage);
+  let total = await Product.find().countDocuments();
+  res.send({ total, products });
 });
 
 router.get("/:id", async function (req, res, next) {
@@ -25,7 +26,7 @@ router.get("/:id", async function (req, res, next) {
   }
 });
 
-router.put("/:id", validate, async function (req, res, next) {
+router.put("/:id", validate, auth, admin, async function (req, res, next) {
   let product = await Product.findById(req.params.id);
   product.name = req.body.name;
   product.price = req.body.price;
@@ -33,13 +34,13 @@ router.put("/:id", validate, async function (req, res, next) {
   res.send(product);
 });
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id", auth, admin, async function (req, res, next) {
   let product = await Product.findByIdAndDelete(req.params.id);
 
   res.send(product);
 });
 
-router.post("/", validate, async function (req, res, next) {
+router.post("/", auth, validate, async function (req, res, next) {
   let product = new Product();
   product.name = req.body.name;
   product.price = req.body.price;

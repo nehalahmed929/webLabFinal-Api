@@ -8,9 +8,10 @@ async function auth(req, res, next) {
   if (!token) return res.status(400).send("Token not provided");
   try {
     let user = jwt.verify(token, config.get("jwtPrivateKey"));
+    console.log(user);
     req.user = await User.findById(user._id);
   } catch (err) {
-    res.status(401).send("invalid token");
+    res.status(401).send(err);
   }
   next();
 }
