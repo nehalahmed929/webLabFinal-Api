@@ -1,0 +1,6 @@
+{
+  "cloudName": "my-img-cloud",
+  "apiKey": "791452888613876",
+  "apiSecret": "021DeKL47iY2jzmtu5kKMH1pzLM",
+  "apiEnvVar": "CLOUDINARY_URL=cloudinary://791452888613876:021DeKL47iY2jzmtu5kKMH1pzLM@my-img-cloud"
+}

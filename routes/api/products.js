@@ -5,6 +5,28 @@ var auth = require("../../middlewares/auth");
 var admin = require("../../middlewares/admin");
 var { Product } = require("../../models/product");
 
+var multer = require("multer");
+var cldnryConfig = require("../../config/cloudinary.json");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+cloudinary.config({
+  cloud_name: cldnryConfig.cloudName,
+  api_key: cldnryConfig.apiKey,
+  api_secret: cldnryConfig.apiSecret,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+
+  params: {
+    folder: "insta",
+    // allowedFormats: ["png"],
+    // transformation: [{ width: 30, height: 30, crop: "limit" }],
+  },
+});
+const parser = multer({ storage: storage });
+
 router.get("/", async function (req, res, next) {
   console.log(req.user);
   let page = Number(req.query.page ? req.query.page : 1);
@@ -40,10 +62,13 @@ router.delete("/:id", auth, admin, async function (req, res, next) {
   res.send(product);
 });
 
-router.post("/", auth, validate, async function (req, res, next) {
+router.post("/", parser.single("image"), async function (req, res, next) {
   let product = new Product();
   product.name = req.body.name;
   product.price = req.body.price;
+  product.category = req.body.category;
+  product.imageUrl = req.body.image;
+  product.details = req.body.details;
   await product.save();
   res.send(product);
 });

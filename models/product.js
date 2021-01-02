@@ -3,7 +3,10 @@ var joi = require("@hapi/joi");
 
 productSchema = mongoose.Schema({
   name: String,
+  category: String,
   price: Number,
+  details: String,
+  imageUrl: String,
 });
 
 let Product = mongoose.model("Product", productSchema);
