@@ -67,7 +67,7 @@ router.post("/", parser.single("image"), async function (req, res, next) {
   product.name = req.body.name;
   product.price = req.body.price;
   product.category = req.body.category;
-  product.imageUrl = req.body.image;
+  product.imageUrl = req.file.path;
   product.details = req.body.details;
   await product.save();
   res.send(product);
